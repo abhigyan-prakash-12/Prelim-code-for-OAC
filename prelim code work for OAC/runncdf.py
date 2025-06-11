@@ -1,4 +1,5 @@
-
+#IGNORE FILE
+#Draft file used to carry out test
 import xarray as xr
 import numpy as np
 import matplotlib.pyplot as plt
