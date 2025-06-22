@@ -156,6 +156,62 @@ def plot_co2_threshold(file,threshold_percentile, threshold_alt, mode="below", u
     plt.tight_layout()
     plt.show()
 
+def plot_co2_threshold_topx(file, threshold_alt, mode="below", unit="m", top_x=5):
+    data = read_nc(file)
+    lat = data['lat']
+    lon = data['lon']
+    pres = data['pres']
+    co2 = data['co2']
+
+    alt_km, alt_ft = pres_to_alt(pres)
+    alt = alt_ft if unit == "ft" else alt_km * 1000  
+
+    if mode == "below":
+        alt_mask = alt <= threshold_alt
+    elif mode == "above":
+        alt_mask = alt > threshold_alt
+
+    lat = lat[alt_mask]
+    lon = lon[alt_mask]
+    co2 = co2[alt_mask]
+
+    lat_unique = np.unique(lat)
+    lon_unique = np.unique(lon)
+    co2_latlon = np.zeros((len(lat_unique), len(lon_unique)))
+
+    for i, lat_val in enumerate(lat_unique):
+        for j, lon_val in enumerate(lon_unique):
+            mask = (lat == lat_val) & (lon == lon_val)
+            co2_latlon[i, j] = np.sum(co2[mask])
+
+    log_co2 = np.log10(np.where(co2_latlon > 0, co2_latlon, np.nan))
+
+    lon_grid, lat_grid = np.meshgrid(lon_unique, lat_unique)
+    fig = plt.figure(figsize=(12, 6))
+    ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
+    plot = ax.pcolormesh(
+        lon_grid, lat_grid, log_co2,
+        cmap='plasma', shading='auto',
+        transform=ccrs.PlateCarree()
+    )
+    ax.set_global()
+    ax.coastlines()
+    ax.stock_img()
+    ax.gridlines()
+    cbar = plt.colorbar(plot, ax=ax, orientation='vertical', pad=0.05)
+    cbar.set_label("Log10 CO2 Emissions (arbitrary units)")
+    unit_str = "m" if unit == "m" else "ft"
+
+    
+    co2_flat = co2_latlon.flatten()
+    top_indices = np.argsort(co2_flat)[-top_x:]  
+    for idx in top_indices:
+        i, j = np.unravel_index(idx, co2_latlon.shape)
+        ax.plot(lon_unique[j], lat_unique[i], 'o', color='cyan', markersize=5, transform=ccrs.PlateCarree())
+
+    plt.title(f"CO₂ Emissions {mode} {threshold_alt} {unit_str} + Top {top_x} Emitters")
+    plt.tight_layout()
+    plt.show()
 def co2_emissions_airport(file, threshold_percentile=99):
     data = read_nc(file)
     lat = data['lat']
@@ -385,5 +441,4 @@ def plot_weighted_emissions(file, total_emission, region_weights):
     plt.title("Weighted CO2 Emission Projection Based on Real Data Template")
     plt.tight_layout()
     plt.show()
-
 
