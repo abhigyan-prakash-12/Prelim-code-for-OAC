@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "prelim code for OAC"
+version = "0.1.0"
+description = ""
+authors = ["a.prakash <abhigyan.prakash@student.isae-supaero.fr>"]
+readme = "README.md"
+
+packages = [
+    { include = "prelim" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11.5"
+numpy = "*"
+pandas = "*"
+fair = "*"
+jupyterlab = "*"
+salib = "*"
+cartopy = "*"
+scikit-learn = "*"
+seaborn = "*"
+xarray = "*"
+netCDF4 = "*"
+openpyxl = "*"
+ipympl = "*"
+geographiclib = "*"
+matplotlib = "*"
+openairclim = {git = "https://github.com/dlr-pa/oac.git", rev = "160001d"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
