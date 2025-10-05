@@ -64,3 +64,66 @@ def projected_emissions_5years_nc(base_nc, start_year, percent_change_per_5year)
         new_ds.to_netcdf(out_name)
         print(f"Created: {out_name} with total CO2 = {np.sum(scaled_co2):.2e} kg")
 
+def apply_region_weights_efficient(lat_vals, lon_vals, co2_vals, region_weights):
+    region_bounds = {
+        "North America": [-180, -45, 12, 70],
+        "Atlantic region": [-45, -25, 12, 70],
+        "South America": [-90, -25, -60, 12],
+        "Pacific": [-180, -90, -60, 12],
+        "Far North": [-180, 60, 70, 90],
+        "Europe": [-25, 60, 35, 70],
+        "Africa and Middle East": [-25, 60, -35, 35],
+        "Asia": [60, 180, -10, 90],
+        "Oceania": [110, 180, -50, -10]
+    }
+
+    lon_converted = np.where(lon_vals > 180, lon_vals - 360, lon_vals)
+    weighted_co2 = co2_vals.copy().astype(np.float32)
+    
+    for region, bounds in region_bounds.items():
+        if region not in region_weights:
+            continue
+        lon_min, lon_max, lat_min, lat_max = bounds
+        weight = region_weights[region]
+        region_mask = (
+            (lon_converted >= lon_min) & (lon_converted <= lon_max) &
+            (lat_vals >= lat_min) & (lat_vals <= lat_max)
+        )
+        weighted_co2[region_mask] *= weight
+
+    return weighted_co2
+
+def scaled_emissions_to_nc_with_weights(input_nc, output_nc, aggco2, year, region_weights, chunk_size=50000):
+    os.makedirs("inputs", exist_ok=True)
+    
+    ds = xr.open_dataset(input_nc)
+    total_points = len(ds['index'])
+    
+    original_total = float(ds['CO2'].sum())
+    scale_factor = aggco2 / original_total
+    weighted_co2 = np.zeros(total_points, dtype=np.float32)
+    
+    for start_idx in range(0, total_points, chunk_size):
+        end_idx = min(start_idx + chunk_size, total_points)
+        lat_chunk = ds['lat'].isel(index=slice(start_idx, end_idx)).values
+        lon_chunk = ds['lon'].isel(index=slice(start_idx, end_idx)).values
+        co2_chunk = ds['CO2'].isel(index=slice(start_idx, end_idx)).values * scale_factor
+        weighted_chunk = apply_region_weights_efficient(lat_chunk, lon_chunk, co2_chunk, region_weights)
+        weighted_co2[start_idx:end_idx] = weighted_chunk
+    
+    current_total = np.sum(weighted_co2)
+    final_co2 = weighted_co2 * (aggco2 / current_total)
+    
+    new_ds = ds.copy()
+    new_ds['CO2'] = (('index',), final_co2)
+    new_ds.attrs['Inventory_Year'] = year
+    new_ds['CO2'].attrs['long_name'] = 'CO2'
+    new_ds['CO2'].attrs['units'] = 'kg'
+    new_ds.attrs['region_weights'] = str(region_weights)
+
+    output_path = os.path.join("inputs", output_nc)
+    new_ds.to_netcdf(output_path)
+    print(f"Saved weighted scaled emissions to {output_path}")
+    ds.close()
+    #return output_path
+

@@ -5,7 +5,7 @@ import os
 # currently the import_csv codes and toml_gen codes will be different but can combine them later
 
 def generate_toml(start_year, end_year, step, output_file, 
-                       inv_species=None, out_species=None):
+                       inv_species=None, out_species=None, weighted=None):
 
     os.makedirs("tomls", exist_ok=True)
 
@@ -14,8 +14,10 @@ def generate_toml(start_year, end_year, step, output_file,
         inv_species = ["CO2"]
     if out_species is None:
         out_species = ["CO2"]
-    
-    inventory_files = [f"mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
+    if weighted is None:
+        inventory_files = [f"mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
+    else:
+        inventory_files = [f"weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]    
 
     
     toml_content = f'''
@@ -143,4 +145,10 @@ def generate_toml(start_year, end_year, step, output_file,
     with open(file_path, 'w') as f:
         f.write(toml_content)
     print(f"TOML file written to {output_file}")
+
+
+    
+
+
+
 
