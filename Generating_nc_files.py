@@ -4,11 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.patches import Rectangle
-from utility import scaled_emissions
+from utility import scaled_emissions, scaled_emissions_co2
 from plot_maps import apply_region_weights
 from utility import read_nc
 import os
 
+
+# no longer functional 
 def scaled_emissions_to_nc(input_nc, output_nc, aggco2, year):
     """
     args:
@@ -18,10 +20,10 @@ def scaled_emissions_to_nc(input_nc, output_nc, aggco2, year):
     """
     os.makedirs("inputs", exist_ok=True)
     xrds = xr.open_dataset(input_nc)
-    scaled_co2 = scaled_emissions(aggco2, input_nc)
-
+    scaled_co2 = scaled_emissions_co2(aggco2, input_nc)
+    
     new_ds = xrds.copy()
-   
+    
     new_ds['CO2'] = (xrds['CO2'].dims, scaled_co2)
     new_ds.attrs['Inventory_Year'] = year
     new_ds['CO2'].attrs['long_name'] = 'CO2'
@@ -30,6 +32,43 @@ def scaled_emissions_to_nc(input_nc, output_nc, aggco2, year):
     output_path = os.path.join("inputs", output_nc)
     new_ds.to_netcdf(output_path)
     print(f"Saved scaled emissions to {output_path}")
+
+
+def scaled_emissions_to_nc_complete(input_nc, output_nc, spc, year):
+    """
+    args:
+    -input_nc - base/reference nc file path
+    -output_nc - name of the output nc 
+    -spc- desired aggregated eissions in the order [co2, nox, h2o, dist]
+    """
+    # Need to add new species
+    os.makedirs("inputs", exist_ok=True)
+    xrds = xr.open_dataset(input_nc)
+    scaled_emi = scaled_emissions(spc, input_nc)
+
+    new_ds = xrds.copy()
+    new_ds.attrs['Inventory_Year'] = year
+
+    new_ds['CO2'] = (xrds['CO2'].dims, scaled_emi[0])
+    new_ds['CO2'].attrs['long_name'] = 'CO2'
+    new_ds['CO2'].attrs['units'] = 'kg'
+    
+    new_ds['H2O'] = (xrds['H2O'].dims, scaled_emi[1])
+    new_ds['H2O'].attrs['long_name'] = 'H2O'
+    new_ds['H2O'].attrs['units'] = 'kg'
+
+    new_ds['NOx'] = (xrds['NOx'].dims, scaled_emi[2])
+    new_ds['NOx'].attrs['long_name'] = 'NOx'
+    new_ds['NOx'].attrs['units'] = 'kg'
+
+    new_ds['distance'] = (xrds['distance'].dims, scaled_emi[3])
+    new_ds['distance'].attrs['long_name'] = 'distance flown'
+    new_ds['distance'].attrs['units'] = 'km'
+
+    output_path = os.path.join("inputs", output_nc)
+    new_ds.to_netcdf(output_path)
+    print(f"Saved scaled emissions to {output_path}")    
+
 
 def projected_emissions_5years_nc(base_nc, start_year, percent_change_per_5year):
     """

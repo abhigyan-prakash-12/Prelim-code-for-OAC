@@ -8,7 +8,12 @@ import cartopy.feature as cfeature
 from matplotlib.patches import Rectangle
 from matplotlib.animation import FuncAnimation
 import matplotlib.colors as mcolors
-
+"""netcdf_file = "Inventories/emi_inv_2025.nc"
+xrds = xr.open_dataset(netcdf_file)
+print(np.sum(xrds['distance'].values))
+print(np.sum(xrds['H2O'].values))
+print(np.sum(xrds['NOx'].values))
+"""
 """netcdf_file = "example/emi_inv_2025.nc"
 xrds = xr.open_dataset(netcdf_file)
 #print(xrds)
@@ -62,9 +67,9 @@ def read_nc(nc_file):
 
     return {'lat':lat, 'lon': lon, 'pres':pres, 'co2': co2, 'nox': nox, 'h2o': h2o}
 
-co2 = read_nc('Inventories/emi_inv_2020.nc')['co2']
-h2o = read_nc('Inventories/emi_inv_2020.nc')['h2o']
-print(co2)
+#co2 = read_nc('Inventories/emi_inv_2020.nc')['co2']
+#h2o = read_nc('Inventories/emi_inv_2020.nc')['h2o']
+#print(co2)
 #print(co2[0]/h2o[0])
 def pres_to_altog(pressure_hpa):
     """

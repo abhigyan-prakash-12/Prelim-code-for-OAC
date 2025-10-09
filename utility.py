@@ -13,8 +13,9 @@ def read_nc(nc_file):
     co2 = xrds['CO2'].values
     h2o = xrds['H2O'].values
     nox = xrds['NOx'].values
+    dist = xrds['distance'].values
 
-    return {'lat':lat, 'lon': lon, 'pres':pres, 'co2': co2, 'nox': nox, 'h2o': h2o}
+    return {'lat':lat, 'lon': lon, 'pres':pres, 'co2': co2, 'nox': nox, 'h2o': h2o, 'dist' : dist}
 
 def unique_val(spc, arr):
     """
@@ -41,6 +42,7 @@ def unique_val(spc, arr):
     alt_ft = alt_m * 3.280
     return alt_m, alt_ft
 def pres_to_alt(pressure_hpa):
+
     """
     Vectorized altitude estimation from pressure (hPa) using the barometric formula
     for both troposphere (<11 km) and stratosphere (11–20 km) under ISA conditions.
@@ -64,7 +66,8 @@ def pres_to_alt(pressure_hpa):
     alt_ft = alt_m * 3.28084
 
     return alt_m, alt_ft
-def scaled_emissions(aggco2, nc_file):
+
+def scaled_emissions_co2(aggco2, nc_file):
     """
     function to return scaled nc data, needs to be adpated for any species
     args-
@@ -78,3 +81,27 @@ def scaled_emissions(aggco2, nc_file):
     scf = aggco2/tot_co2
     scl_co2 = co2* scf
     return scl_co2
+
+def scaled_emissions(spc, nc_file):
+    """
+    function to return scaled nc data, needs to be adpated for any species
+    args-
+    -spc: list og desired aggregated values in order co2, h2o, nox,  dist
+    -nc_file: file path of nc file to be scaled
+    """
+    co2 = read_nc(nc_file)['co2']
+    nox = read_nc(nc_file)['nox']
+    h2o = read_nc(nc_file)['h2o']
+    dist = read_nc(nc_file)['dist']
+    
+    tot_co2 = np.sum(co2)
+    tot_nox = np.sum(nox)
+    tot_h2o = np.sum(h2o)
+    tot_dist = np.sum(dist)
+
+    scl_co2 = co2 * spc[0]/tot_co2
+    scl_nox = nox * spc[1]/tot_nox
+    scl_h2o = h2o * spc[2]/tot_h2o
+    scl_dist = dist * spc[3]/tot_dist
+
+    return [scl_co2, scl_h2o, scl_nox,  scl_dist]
