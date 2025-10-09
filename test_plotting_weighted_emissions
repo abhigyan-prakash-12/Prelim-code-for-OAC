@@ -1,3 +1,0 @@
-from plot_maps import plot_co2_emissions
-
-plot_co2_emissions("inputs/test_weighted.nc")

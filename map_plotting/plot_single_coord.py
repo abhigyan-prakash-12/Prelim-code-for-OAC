@@ -1,9 +1,9 @@
 import xarray as xr
 import numpy as np
-from utility import read_nc, pres_to_alt, unique_val
+from utils.utility import read_nc, pres_to_alt, unique_val
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from utility import scaled_emissions
+from utils.utility import scaled_emissions
 
 
 def plot_pres(file, sp1= None, sp2=None, sp3=None, scaled_sp=None):

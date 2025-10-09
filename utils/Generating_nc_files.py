@@ -4,9 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from matplotlib.patches import Rectangle
-from utility import scaled_emissions, scaled_emissions_co2
-from plot_maps import apply_region_weights
-from utility import read_nc
+from utils.utility import scaled_emissions, scaled_emissions_co2
+from map_plotting.plot_maps import apply_region_weights
+from utils.utility import read_nc
 import os
 
 

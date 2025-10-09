@@ -1,6 +1,6 @@
 import csv 
 import numpy as np
-from Generating_nc_files import scaled_emissions_to_nc, scaled_emissions_to_nc_with_weights, scaled_emissions_to_nc_complete
+from utils.Generating_nc_files import scaled_emissions_to_nc, scaled_emissions_to_nc_with_weights, scaled_emissions_to_nc_complete
 import xarray as xr
 
 # Next targets - 

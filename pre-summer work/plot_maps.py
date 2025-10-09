@@ -5,7 +5,7 @@ import matplotlib.gridspec as gridspec
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from matplotlib.patches import Rectangle
-from utility import read_nc, pres_to_alt, unique_val
+from utils.utility import read_nc, pres_to_alt, unique_val
 
 
 def plot_co2_emissions_key(file, threshold = 10000):
