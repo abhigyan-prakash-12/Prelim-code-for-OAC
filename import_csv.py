@@ -1,6 +1,6 @@
 import csv 
 import numpy as np
-from utils.Generating_nc_files import scaled_emissions_to_nc, scaled_emissions_to_nc_with_weights, scaled_emissions_to_nc_complete
+from utils.Generating_nc_files import scaled_emissions_to_nc, scaled_emissions_to_nc_with_weights, scaled_emissions_to_nc_complete, scaled_emissions_to_nc_with_weights_cont
 import xarray as xr
 
 # Next targets - 
@@ -93,7 +93,7 @@ def csv_to_ncdf_comp(csv_file, start_year, end_year, step = 1):
             nc_name = f"mat_generated_nc_{years[i]}.nc"
             scaled_emissions_to_nc_complete('Inventories/emi_inv_2025.nc', nc_name, [co2[i], dist[i], nox[i], h2o[i]], float(years[i]))
               
-
+#edit 16h43 21st oct to copy weighted to another function weighted_cont to test effect of different weighted contrail values
 def csv_to_matrix_weighted(csv_file, start_year, end_year, region_weights,  step = 1):
      matrix = csv_to_matrix(csv_file)
      years = []
@@ -116,6 +116,32 @@ def csv_to_matrix_weighted(csv_file, start_year, end_year, region_weights,  step
               for i in range(start_idx, end_idx, step):
                 nc_name = f"weighted_mat_generated_nc_{years[i]}.nc"
                 scaled_emissions_to_nc_with_weights('Inventories/emi_inv_2025.nc', nc_name, co2[i], float(years[i]), weights)
+
+def csv_to_matrix_weighted_cont(csv_file, start_year, end_year, region_weights,  step = 1):
+     matrix = csv_to_matrix(csv_file)
+     years = []
+     dist = []
+     for row in matrix[1:]:
+        years.append(row[0])
+        dist.append(float(row[2]))
+     start_year = str(start_year)
+     end_year = str(end_year)    
+     start_idx = years.index(start_year)
+     end_idx = years.index(end_year)
+
+     if isinstance(region_weights, dict):
+          final_region_weights = region_weights
+          for i in range(start_idx, end_idx, step):
+            nc_name = f"dist_weighted_mat_generated_nc_{years[i]}.nc"
+            scaled_emissions_to_nc_with_weights_cont('Inventories/emi_inv_2025.nc', nc_name, dist[i], float(years[i]), final_region_weights)
+     else:
+          for idx, weights in enumerate(region_weights):
+              for i in range(start_idx, end_idx, step):
+                nc_name = f"dist_weighted_mat_generated_nc_{years[i]}.nc"
+                scaled_emissions_to_nc_with_weights_cont('Inventories/emi_inv_2025.nc', nc_name, dist[i], float(years[i]), weights)
+# FINISHED WEIGHTED CONTRAIL- NEED TO TEST IT OUT
+
+
 
 """test_weights = {
         "North America": 1.2,

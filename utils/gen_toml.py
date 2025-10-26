@@ -12,11 +12,17 @@ def generate_toml(start_year, end_year, step, output_file,
     h = end_year - start_year + 1
     if inv_species is None:
         inv_species = ["CO2","H2O", "NOx", "distance"]
+    else:
+        inv_species = inv_species    
     if out_species is None:
         out_species = ["CO2","H2O", "cont"]
+    else:
+        out_species = out_species
     if weighted is None:
         inventory_files = [f"mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
-    else:
+    if weighted == "distance_weighted":
+        inventory_files = [f"dist_weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
+    if weighted  == "weighted":
         inventory_files = [f"weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]    
 
     

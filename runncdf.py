@@ -8,12 +8,14 @@ import cartopy.feature as cfeature
 from matplotlib.patches import Rectangle
 from matplotlib.animation import FuncAnimation
 import matplotlib.colors as mcolors
-"""netcdf_file = "Inventories/emi_inv_2025.nc"
+netcdf_file = "Inventories/emi_inv_2025.nc"
 xrds = xr.open_dataset(netcdf_file)
-print(np.sum(xrds['distance'].values))
-print(np.sum(xrds['H2O'].values))
-print(np.sum(xrds['NOx'].values))
-"""
+#print(np.sum(xrds['distance'].values))
+#print(xrds['distance'].attrs['long_name'])
+# sum of distance = 58495967000.0
+#print(np.sum(xrds['H2O'].values))
+#print(np.sum(xrds['NOx'].values))
+
 """netcdf_file = "example/emi_inv_2025.nc"
 xrds = xr.open_dataset(netcdf_file)
 #print(xrds)

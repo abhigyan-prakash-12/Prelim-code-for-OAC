@@ -86,7 +86,7 @@ def scaled_emissions(spc, nc_file):
     """
     function to return scaled nc data, needs to be adpated for any species
     args-
-    -spc: list og desired aggregated values in order co2, h2o, nox,  dist
+    -spc: list og desired aggregated values in order co2, dist, nox, h2o  
     -nc_file: file path of nc file to be scaled
     """
     co2 = read_nc(nc_file)['co2']
@@ -100,8 +100,8 @@ def scaled_emissions(spc, nc_file):
     tot_dist = np.sum(dist)
 
     scl_co2 = co2 * spc[0]/tot_co2
-    scl_nox = nox * spc[1]/tot_nox
-    scl_h2o = h2o * spc[2]/tot_h2o
-    scl_dist = dist * spc[3]/tot_dist
+    scl_dist = dist * spc[1]/tot_dist
+    scl_nox = nox * spc[2]/tot_nox
+    scl_h2o = h2o * spc[3]/tot_h2o
 
-    return [scl_co2, scl_h2o, scl_nox,  scl_dist]
+    return [scl_co2, scl_dist, scl_nox,  scl_h2o]
