@@ -124,6 +124,64 @@ def plot_dist_emissions(file):
     plt.tight_layout()
     plt.show()    
 
+def plot_nox_emissions(file):
+    lat = read_nc(file)['lat']
+    nox = read_nc(file)['nox'] 
+    lon = read_nc(file)['lon'] 
+    pres = read_nc(file)['pres']
+
+    lat_unique = np.unique(lat)
+    lon_unique = np.unique(lon)
+    nox_latlon = np.zeros((len(lat_unique), len(lon_unique)))
+
+    for i, lat_val in enumerate(lat_unique):
+        for j, lon_val in enumerate(lon_unique):
+            mask = (lat == lat_val) & (lon == lon_val)
+            nox_latlon[i, j] = np.sum(nox[mask])
+
+    lon_grid, lat_grid = np.meshgrid(lon_unique, lat_unique)
+    safe_nox = np.where(nox_latlon > 0, nox_latlon, np.nan)
+    fig = plt.figure(figsize=(12, 6))
+    ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
+    plot = ax.pcolormesh(lon_grid, lat_grid, np.log10(safe_nox), cmap='plasma', shading='auto', transform=ccrs.PlateCarree())
+    plot.axes.set_global()
+    plot.axes.coastlines()
+    plot.axes.stock_img()
+    ax.gridlines()
+    plt.colorbar(plot, ax=ax, orientation='vertical', label='distance', pad=0.05)
+    plt.title("Global distance flown by Latitude and Longitude")
+    plt.tight_layout()
+    plt.show()    
+
+def plot_h2o_emissions(file):
+    lat = read_nc(file)['lat']
+    h2o = read_nc(file)['h2o'] 
+    lon = read_nc(file)['lon'] 
+    pres = read_nc(file)['pres']
+
+    lat_unique = np.unique(lat)
+    lon_unique = np.unique(lon)
+    h2o_latlon = np.zeros((len(lat_unique), len(lon_unique)))
+
+    for i, lat_val in enumerate(lat_unique):
+        for j, lon_val in enumerate(lon_unique):
+            mask = (lat == lat_val) & (lon == lon_val)
+            h2o_latlon[i, j] = np.sum(h2o[mask])
+
+    lon_grid, lat_grid = np.meshgrid(lon_unique, lat_unique)
+    safe_h2o = np.where(h2o_latlon > 0, h2o_latlon, np.nan)
+    fig = plt.figure(figsize=(12, 6))
+    ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
+    plot = ax.pcolormesh(lon_grid, lat_grid, np.log10(safe_h2o), cmap='plasma', shading='auto', transform=ccrs.PlateCarree())
+    plot.axes.set_global()
+    plot.axes.coastlines()
+    plot.axes.stock_img()
+    ax.gridlines()
+    plt.colorbar(plot, ax=ax, orientation='vertical', label='distance', pad=0.05)
+    plt.title("Global distance flown by Latitude and Longitude")
+    plt.tight_layout()
+    plt.show() 
+
 def plot_co2_threshold(file,threshold_percentile, threshold_alt, mode="below", unit="m"):
     data = read_nc(file)
     lat = data['lat']
