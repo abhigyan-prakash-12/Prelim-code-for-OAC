@@ -1,0 +1,18 @@
+read_config ln. 254 in check_against_template INFO: Get default value for: responses CO2 rf method 
+read_config ln. 254 in check_against_template INFO: Get default value for: responses cont method 
+read_config ln. 520 in check_metrics_time ERROR: Metrics time settings with t_0 = 2020 and H = 6 are outside defined time range.
+read_config ln. 185 in check_config ERROR: Configuration is not valid.
+read_config ln. 380 in create_output_dir INFO: Overwrite existing output directory results/
+read_netcdf ln. 173 in open_inventories INFO: Emission inventories openend, attribute sections and time constraints checked successfully.
+read_netcdf ln. 220 in split_inventory_by_aircraft WARNING: No ac coordinate found in emission inventory for year 2020.0. Reverting to 'DEFAULT' aircraft from config file.
+read_netcdf ln. 220 in split_inventory_by_aircraft WARNING: No ac coordinate found in emission inventory for year 2021.0. Reverting to 'DEFAULT' aircraft from config file.
+read_netcdf ln. 220 in split_inventory_by_aircraft WARNING: No ac coordinate found in emission inventory for year 2022.0. Reverting to 'DEFAULT' aircraft from config file.
+read_netcdf ln. 220 in split_inventory_by_aircraft WARNING: No ac coordinate found in emission inventory for year 2023.0. Reverting to 'DEFAULT' aircraft from config file.
+read_netcdf ln. 220 in split_inventory_by_aircraft WARNING: No ac coordinate found in emission inventory for year 2024.0. Reverting to 'DEFAULT' aircraft from config file.
+main ln. 177 in run WARNING: No species defined in config with 2D response_grid.
+main ln. 252 in run WARNING: No contrails defined in config.
+main ln. 264 in run INFO: No subsequent species (PMO) defined in config.
+main ln. 277 in run INFO: Execution time: 0.6364729404449463 sec
+main ln. 280 in run WARNING: OpenAirClim is currently in development phase.
+The computed output is not for scientific purposes until release of our publication.
+Amongst others, the climate impact of longer species lifetimes in the stratosphere is not considered.

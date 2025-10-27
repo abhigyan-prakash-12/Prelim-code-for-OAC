@@ -230,3 +230,6 @@ def scaled_emissions_to_nc_with_weights_cont(input_nc, output_nc, aggdist, year,
     ds.close()
     #return output_path
 
+
+        
+    

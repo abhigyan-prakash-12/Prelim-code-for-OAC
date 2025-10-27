@@ -5,7 +5,7 @@ import os
 # currently the import_csv codes and toml_gen codes will be different but can combine them later
 
 def generate_toml(start_year, end_year, step, output_file, 
-                       inv_species=None, out_species=None, weighted=None):
+                       inv_species=None, out_species=None, weighted=None, scaling= None, scale_file = None):
 
     os.makedirs("tomls", exist_ok=True)
 
@@ -18,14 +18,37 @@ def generate_toml(start_year, end_year, step, output_file,
         out_species = ["CO2","H2O", "cont"]
     else:
         out_species = out_species
-    if weighted is None:
-        inventory_files = [f"mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
-    if weighted == "distance_weighted":
-        inventory_files = [f"dist_weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
-    if weighted  == "weighted":
-        inventory_files = [f"weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]    
+    if scaling == None:    
+        if weighted is None:
+            inventory_files = [f"mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
+        if weighted == "distance_weighted":
+            inventory_files = [f"dist_weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
+        if weighted  == "weighted":
+            inventory_files = [f"weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]   
+        time_evo = ""    
 
+    if scaling == "norm":
+        if weighted is None:
+            inventory_files = [f"mat_generated_nc_{start_year}.nc"]
+        if weighted == "distance_weighted":
+            inventory_files = [f"dist_weighted_mat_generated_nc_{start_year}.nc"]
+        if weighted  == "weighted":
+            inventory_files = [f"weighted_mat_generated_nc_{start_year}.nc" ]    
+
+        time_evo = f'file = "{scale_file}"'
     
+    if scaling == "scale":
+        if weighted is None:
+            inventory_files = [f"mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
+        if weighted == "distance_weighted":
+            inventory_files = [f"dist_weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]
+        if weighted  == "weighted":
+            inventory_files = [f"weighted_mat_generated_nc_{year}.nc" for year in range(start_year, end_year, step)]  
+
+        time_evo = f'file = "{scale_file}"'
+
+
+
     toml_content = f'''
 
     # Species considered
@@ -68,11 +91,12 @@ def generate_toml(start_year, end_year, step, output_file,
 
     # Time settings
     [time]
-    dir = "input/"
+    dir = "inputs/"
     # Time range in years: t_start, t_end, step, (t_end not included)
     range = [{start_year}, {end_year}, {step}]
     # Time evolution of emissions
     # either type "scaling" or type "norm"
+    {time_evo}
     #file = "time_scaling_example.nc"
     #file = "time_norm_example.nc"
 
